@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import {
   StylesProvider,
@@ -20,14 +20,7 @@ const generateClassName = createGenerateClassName({
 });
 
 export default () => {
-  const [isSignedIn, setIsSignedIn] = useState(false);
-
-  useEffect(()=>{
-    const isSignedIn = localStorage.getItem('isSignedIn');
-    if(isSignedIn == 'true'){
-      setIsSignedIn(true);
-    }
-  },[]);
+  const [isSignedIn, setIsSignedIn] = useState(localStorage.getItem('isSignedIn') == 'true' ? true : false);
 
   const setSignInValue =(val)=>{
     localStorage.setItem('isSignedIn', val);
