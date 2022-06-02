@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import {
   StylesProvider,
@@ -20,7 +20,19 @@ const generateClassName = createGenerateClassName({
 });
 
 export default () => {
-  const [isSignedIn, setIsSignedIn] = useState(localStorage.getItem('isSignedIn') == 'true' ? true : false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [loading, setLoadiig] = useState(true);
+
+  useEffect(()=>{
+    const isSignedIn = localStorage.getItem('isSignedIn');
+    if(isSignedIn == 'true'){
+      setIsSignedIn(true);
+      setLoadiig(false);
+    }
+    else{
+      setLoadiig(false);
+    }
+  })
 
   const setSignInValue =(val)=>{
     localStorage.setItem('isSignedIn', val);
@@ -30,6 +42,7 @@ export default () => {
   return (
     <BrowserRouter>
       <StylesProvider generateClassName={generateClassName}>
+        { (!loading) ?
         <div>
           <Header
             onSignOut={() => setSignInValue(false)}
@@ -41,14 +54,10 @@ export default () => {
               <AuthenticatedRoute path="/marketing" component={MarketingLazy} props={{isSignedIn: isSignedIn}}/>
               <UnAuthenticatedRoute exact path="/signin" component={Signin} props={{isSignedIn: isSignedIn, onSignIn: ()=>setSignInValue(true)}} />
               <UnAuthenticatedRoute exact path="/signup" component={Signup} props={{isSignedIn: isSignedIn, onSignIn: ()=>setSignInValue(true)}} />
-                {/* <Signin onSignIn={()=>setIsSignedIn(true)} />
-              </Route>
-              <UnAuthenticatedRoute exact path="/signup">
-                <Signup onSignIn={()=>setIsSignedIn(true)} />
-              </Route> */}
             </Switch>
           </Suspense>
-        </div>
+        </div> :
+        <Progress /> }
       </StylesProvider>
     </BrowserRouter>
   );
